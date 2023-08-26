@@ -1,0 +1,189 @@
+body,
+html {
+  font-family: "Poppins", sans-serif;
+
+  margin: 0px;
+  padding: 0px;
+  background: #304352;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #ffffff, #bdbfc0);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #ffffff, #bdbfc0);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h3,
+.h4 {
+  font-weight: 400;
+  line-height: 1.5em;
+}
+
+#map {
+  height: 92.5vh;
+  width: 250hw;
+  margin-top: 1px;
+}
+/*=========sidebar---design------*/
+#pantalla-dividida {
+  display: flex;
+}
+.combos,
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -20px;
+  margin-left: 50px;
+}
+
+.boton_Ver_Camino,
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.instrucciones-content {
+  padding: 20px;
+  border: 5px solid #979696;
+  background-color: #d3d0d0;
+  overflow-y: auto;
+}
+#sidebar {
+  display: flex;
+  height: 100% !important;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 11;
+  width: 250px;
+  overflow: auto;
+  transition: all 0.3s;
+  background-color: #fff;
+  box-shadow: 0 0 30px 0 rgba(200 200 200 / 20%);
+}
+
+#sidebar::-webkit-scrollbar {
+  width: 5px;
+  border-radius: 10px;
+  background-color: #eee;
+  display: none;
+}
+
+#sidebar::-webkit-scrollbar-thumbs {
+  width: 5px;
+  border-radius: 10px;
+  background-color: #333;
+  display: none;
+}
+
+#sidebar:hover::-webkit-scrollbar-thumbs {
+  display: block;
+}
+
+#sidebar:hover::-webkit-scrollbar {
+  display: block;
+}
+
+#sidebar .sidebar-header {
+  padding: 20px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.sidebar-header h3 {
+  color: #333;
+  font-size: 17px;
+  margin: 0px;
+  text-transform: uppercase;
+  transition: all 0.5s ease;
+  font-weight: 600;
+}
+
+.sidebar-header h3 img {
+  width: 45px;
+  margin-right: 10px;
+}
+
+/*=========sidebar---design- end-----*/
+
+/*========main-content- navbardesign -start-----*/
+
+/* .top-navbar {
+  width: 100%;
+  z-index: 9;
+  position: relative;
+  padding: 15px 30px;
+  background-color: #353b48;
+  margin-top: -10px;
+} */
+
+input[type="search"] {
+  background-color: #d9d9d9;
+  color: #fff;
+  padding-left: 20px;
+  border: none;
+  border-radius: 50px 0px 0px 50px;
+}
+.izquierda {
+  background: #f9fafc;
+  border: 3px solid #000000;
+  height: 101vh;
+  flex: 1;
+  padding: 15px;
+}
+
+.derecha {
+  height: 100vh;
+  width: 100%;
+  flex: 2.75;
+  border: 3px solid #000000;
+  align-items: center;
+}
+.xp-breadcrumbbar .page-title {
+  font-size: 20px;
+  color: #fff;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+/*---navbardesign -end-----*/
+
+/*--table design start----*/
+
+.pagination {
+  float: right;
+  margin: 0 0 5px;
+}
+
+.pagination li a {
+  border-radius: 10px;
+  border-color: black;
+  font-size: 14px;
+  min-width: 30px;
+  min-height: 30px;
+  color: #000000;
+  margin: 0 2px;
+  line-height: 35px;
+  border-radius: 2px !important;
+  text-align: center;
+  padding: 0 6px;
+}
+
+.pagination li a:hover {
+  color: #000000;
+}
+
+.pagination li.disabled i {
+  color: #000000;
+}
+
+.pagination li i {
+  font-size: 16px;
+  padding-top: 6px;
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conexiones</title>
+  <link rel="stylesheet" type="text/css" href="/Styles/stylesconexiones.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+</head>
+
+<body>
+  <form action="/conexion" method="post" id="miFormulario">
+    <div class="combos">
+      <label for="nodo_origen_id"
+        style="margin: 15px; color: rgb(0, 0, 0); margin-left: 115px"><strong>Bloque-Origen:</strong></label>
+      <select name="nodo_origen_id" class="form-select" aria-label="Floating label select example" style="
+            width: 140px;
+            height: 40px;
+            margin: 15px;
+            margin-top: -10px;
+            margin-left: 115px;
+          " id="origen" required>
+        <% nodos.forEach((nodo)=> { %>
+          <option value="<%= nodo.id_nodo %>">
+            <%= nodo.nombre_nodo %>
+          </option>
+          <% }); %>
+      </select>
+      <label for="nodo_destino_id"
+        style="margin: 15px; color: rgb(0, 0, 0); margin-left: 115px"><strong>Bloque-Destino:</strong></label>
+      <select name="nodo_destino_id" class="form-select" aria-label="Floating label select example" style="
+            width: 140px;
+            height: 40px;
+            margin: 15px;
+            margin-top: -10px;
+            margin-left: 115px;
+          " id="destino" required>
+        <% nodos.forEach((nodo)=> { %>
+          <option value="<%= nodo.id_nodo %>">
+            <%= nodo.nombre_nodo %>
+          </option>
+          <% }); %>
+      </select>
+    </div>
+
+    <div class="mb-3" style="margin-left: 20px;">
+      <div id="mensaje-exito" style="display: none; width: 427px" class="alert alert-success">
+        Arista creada exitosamente.
+      </div>
+    </div>
+    <br />
+    <button type="submit" value="Agregar conexión" class="btn btn-primary custom-button" tabindex="5"
+      style="background-color: #210f7a; color: #fff; margin-left: 100px">
+      AGREGAR
+    </button>
+    <a href="javascript:void(0);" onclick="cerrarModalConexion()" class="btn btn-secondary custom-button" style="
+          background-color: rgb(200, 32, 32);
+          color: #fff;
+          margin-left: 50px;
+        ">CANCELAR</a>
+  </form>
+  <script>
+    document.getElementById("miFormulario").addEventListener("submit", function (event) {
+      const mensajeExito = document.getElementById("mensaje-exito");
+      // Simula un envío exitoso (puedes reemplazar esto con tu lógica de éxito real)
+      setTimeout(function () {
+        // Muestra el mensaje de éxito
+        mensajeExito.style.display = "block";
+
+        // Después de 2 segundos, oculta el mensaje de éxito
+        setTimeout(function () {
+          mensajeExito.style.display = "none";
+        }, 1000);
+
+        // Restablece el formulario
+        miFormulario.reset();
+      }, 1000); // Simula una demora de 1 segundo (ajusta esto según tus necesidades)
+    });
+  </script>
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
+</body>
+
+</html>

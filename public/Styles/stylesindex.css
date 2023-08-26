@@ -1,0 +1,42 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+}
+.custom-container {
+  border: 1px solid #000000;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 20px;
+  background-color: #fff;
+}
+
+/* Estilo para la tabla */
+.custom-table {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+
+/* Estilo para las celdas de la tabla */
+.custom-table th,
+.custom-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+/* Estilo para los botones */
+.custom-btn {
+  border-radius: 5px;
+  margin-right: 5px;
+}
+.btn-outline-custom {
+  color: #000000; /* Color del texto */
+  background-color: transparent; /* Color de fondo */
+  border-color: #210f7a; /* Color del borde */
+}
+
+.btn-outline-custom:hover {
+  color: #ffffff;
+  border-color: #210f7a;
+  background-color: #210f7a;
+}

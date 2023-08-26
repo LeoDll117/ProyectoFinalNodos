@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Interfaz Cliente</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css"
+    />
+    <link rel="stylesheet" type="text/css" href="/Styles/stylesclient.css" />
+  </head>
+
+  <body>
+    <div class="pantalla-dividida">
+      <div class="derecha-contenedor">
+        <div class="izquierda" style="font-family: inherit">
+          <table
+            class="table table-bordered table-striped text-center mt-4"
+            id="nodos"
+          >
+            <thead>
+              <tr class="bg-primary text-white">
+                <th
+                  scope="col"
+                  class="text-center"
+                  style="
+                    font-size: 14px;
+                    background-color: #6d6f75;
+                    font-family: inherit;
+                  "
+                >
+                  NOMBRE
+                </th>
+                <th
+                  scope="col"
+                  class="text-center"
+                  style="
+                    font-size: 14px;
+                    background-color: #6d6f75;
+                    font-family: inherit;
+                  "
+                >
+                  DESCRIPCION
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% result.forEach((user)=> { %>
+              <tr>
+                <td><%= user.nombre_nodo %></td>
+                <td><%= user.descripcion %></td>
+              </tr>
+              <%}) %>
+            </tbody>
+          </table>
+          <form
+            action="/CaminoMasCorto"
+            id="rutaForm"
+            class="formCalculate form"
+            ,
+            method="POST"
+          >
+            <!-- el combo box de inicio y destino -->
+            <div class="combos">
+              <div class="form-floating">
+                <select
+                  class="form-select"
+                  id="origen"
+                  name="origen"
+                  aria-label="Floating label select example"
+                  style="width: 140px; height: 40px; margin: 15px"
+                ></select>
+                <label
+                  for="floatingSelect"
+                  style="margin: 15px; color: rgb(199, 44, 44)"
+                  ><strong>Origen</strong></label
+                >
+                <input type="hidden" id="origenId" name="origenId" />
+              </div>
+              <div class="form-floating">
+                <select
+                  class="form-select"
+                  id="destino"
+                  name="destino"
+                  aria-label="Floating label select example"
+                  style="width: 140px; height: 40px; margin: 30px"
+                ></select>
+                <label
+                  for="floatingSelect"
+                  style="margin: 30px; color: rgb(199, 44, 44)"
+                  ><strong>Destino</strong></label
+                >
+                <input type="hidden" id="destinoId" name="destinoId" />
+              </div>
+            </div>
+            <div class="boton_Ver_Camino">
+              <button
+                id="verCamino"
+                type="submit"
+                class="btn btn-secondary btn-sm"
+                style="
+                  width: 130px;
+                  height: 40px;
+                  background: #1b4ead;
+                  border: #000000;
+                "
+              >
+                <strong>Ver camino</strong>
+              </button>
+            </div>
+            <div class="Descripciones" style="margin-top: 20px">
+              <div
+                id="instrucciones"
+                class="instrucciones-content"
+                style="display: none"
+              ></div>
+            </div>
+            <br />
+          </form>
+        </div>
+      </div>
+      <div class="map-section">
+        <h1>RUTAS DEL CAMPUS UNIVERSITARIO</h1>
+        <button
+          class="btn btn-secondary btn-cerrar-sesion"
+          onclick="cerrarSesion()"
+        >
+          Cerrar Sesión
+        </button>
+        <div id="map"></div>
+        <script>
+          function cargarNombresNodo() {
+            fetch("/nombrenodo")
+              .then((response) => response.json())
+              .then((nodos) => {
+                const origenselect = document.getElementById("origen");
+                const destinoselect = document.getElementById("destino");
+
+                nodos.forEach((nodo) => {
+                  const optionOrigen = document.createElement("option");
+                  const optionDestino = document.createElement("option");
+                  optionOrigen.value = nodo.id_nodo;
+                  optionOrigen.textContent = nodo.nombre_nodo; // Corrección aquí
+                  optionDestino.value = nodo.id_nodo;
+                  optionDestino.textContent = nodo.nombre_nodo; // Corrección aquí
+                  origenselect.appendChild(optionOrigen);
+                  destinoselect.appendChild(optionDestino);
+                  origenselect.addEventListener("change", (event) => {
+                    const selectedOption =
+                      origenselect.options[origenselect.selectedIndex];
+                    document.getElementById("origenId").value =
+                      selectedOption.value;
+                  });
+
+                  destinoselect.addEventListener("change", (event) => {
+                    const selectedOption =
+                      destinoselect.options[destinoselect.selectedIndex];
+                    document.getElementById("destinoId").value =
+                      selectedOption.value;
+                  });
+                });
+              });
+          }
+          cargarNombresNodo();
+          function loadGoogleMapsScript() {
+            var script = document.createElement("script");
+            script.src =
+              "https://maps.googleapis.com/maps/api/js?key=AIzaSyAdukNsKwEAhIbP0izS09hX6QVFmJbVpKU&callback=initialize";
+            document.body.appendChild(script);
+          }
+          loadGoogleMapsScript();
+          let map;
+          //let coordenadasRuta;
+          function initialize(coordenadasRuta) {
+            map = new google.maps.Map(document.getElementById("map"), {
+              center: { lat: -4.0342774, lng: -79.206469 },
+              zoom: 15,
+            });
+            const coordenadasLatLng = coordenadasRuta.map((coordenada) => {
+              return new google.maps.LatLng(
+                coordenada.latitud,
+                coordenada.longitud
+              );
+            });
+
+            // Crea una ruta en el mapa utilizando las coordenadas LatLng
+            const ruta = new google.maps.Polyline({
+              path: coordenadasLatLng,
+              geodesic: true,
+              strokeColor: "#FF0000", // Color de la línea
+              strokeOpacity: 1.0,
+              strokeWeight: 2,
+            });
+
+            // Agrega la ruta al mapa
+            ruta.setMap(map);
+            coordenadasLatLng.forEach((coordenada, index) => {
+              const marker = new google.maps.Marker({
+                position: coordenada,
+                map: map,
+                title: coordenadasRuta[index].nombre_nodo, // Título del marcador (puedes personalizarlo)
+              });
+              const infoWindow = new google.maps.InfoWindow({
+                content: coordenadasRuta[index].nombre, // Contenido del cuadro de información
+              });
+              marker.addListener("click", () => {
+                infoWindow.open(map, marker);
+              });
+            });
+            var directionsService = new google.maps.DirectionsService();
+
+            var start = new google.maps.LatLng(
+              coordenadasRuta[0].latitud,
+              coordenadasRuta[0].longitud
+            );
+            var end = new google.maps.LatLng(
+              coordenadasRuta[coordenadasRuta.length - 1].latitud,
+              coordenadasRuta[coordenadasRuta.length - 1].longitud
+            );
+            var request = {
+              origin: start,
+              destination: end,
+              travelMode: google.maps.TravelMode.WALKING,
+            };
+
+            // Realiza la solicitud de dirección
+            document.getElementById("instrucciones").innerHTML = "";
+            directionsService.route(request, function (response, status) {
+              if (status == google.maps.DirectionsStatus.OK) {
+                var directionsRenderer = new google.maps.DirectionsRenderer({
+                  suppressMarkers: true, // Suprimir los marcadores predeterminados
+                  panel: document.getElementById("instrucciones"),
+                });
+
+                directionsRenderer.setDirections(response);
+                var bounds = response.routes[0].bounds;
+                map.fitBounds(bounds);
+                document.getElementById("instrucciones").style.display =
+                  "block";
+              }
+            });
+          }
+          // Evento que se dispara cuando se envía el formulario
+          document
+            .getElementById("rutaForm")
+            .addEventListener("submit", function (event) {
+              event.preventDefault(); // Evita que el formulario se envíe de forma predeterminada
+
+              const origenSeleccionado =
+                document.getElementById("origenId").value;
+              const destinoSeleccionado =
+                document.getElementById("destinoId").value;
+
+              // Realiza una solicitud POST al servidor para obtener las coordenadas
+              fetch("/CaminoMasCorto", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  origenId: origenSeleccionado,
+                  destinoId: destinoSeleccionado,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (
+                    data.ruta &&
+                    Array.isArray(data.ruta) &&
+                    data.ruta.length > 0
+                  ) {
+                    initialize(data.ruta);
+                  } else {
+                    console.error(
+                      "La respuesta del servidor es inválida o está vacía."
+                    );
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error al obtener las coordenadas:", error);
+                });
+            });
+          // function mapLocation() {
+          //   var directionsDisplay;
+          //   var directionsService = new google.maps.DirectionsService();
+          //   var map;
+
+          //   function initialize() {
+          //     directionsDisplay = new google.maps.DirectionsRenderer({});
+          //     var chicago = new google.maps.LatLng(-4.0342774, -79.206469);
+          //     var mapOptions = {
+          //       zoom: 15,
+          //       center: chicago,
+          //     };
+          //     map = new google.maps.Map(
+          //       document.getElementById("map"),
+          //       mapOptions
+          //     );
+
+          //     directionsDisplay.setMap(map);
+          //     google.maps.event.addDomListener(
+          //       document.getElementById("track_route"),
+          //       "click",
+          //       calcRoute
+          //     );
+          //   }
+          //   function calcRoute() {
+          //     var origen = document.getElementById("origen").value;
+          //     var destino = document.getElementById("destino").value;
+          //     var nombreNodoOrigen =
+          //       document.getElementById("origen").options[
+          //         document.getElementById("origen").selectedIndex
+          //       ].text;
+          //     var nombreNodoDestino =
+          //       document.getElementById("destino").options[
+          //         document.getElementById("destino").selectedIndex
+          //       ].text;
+          //     if (origen === destino) {
+          //       Swal.fire({
+          //         icon: "error",
+          //         title: "Error",
+          //         text: "Los nodos de origen y destino deben ser diferentes.",
+          //         confirmButtonColor: "#1E38F5",
+          //         customClass: {
+          //           title: "mi-titulo-clase",
+          //           confirmButton: "mi-boton-clase",
+          //         },
+          //       });
+          //     } else {
+          //       document.getElementById("instrucciones").innerHTML = "";
+          //       // Hacer una solicitud al servidor para calcular el camino más corto
+          //       fetch("/camino?origen=" + origen + "&destino=" + destino)
+          //         .then((response) => response.json())
+          //         .then((result) => {
+          //           var origenPosition = result[origen];
+          //           var destionPosition = result[destino];
+
+          //           // var start = new google.maps.LatLng(37.334818, -121.884886);
+          //           var start = new google.maps.LatLng(
+          //             origenPosition.latitud,
+          //             origenPosition.longitud
+          //           );
+          //           //var end = new google.maps.LatLng(38.334818, -181.884886);
+          //           var end = new google.maps.LatLng(
+          //             destionPosition.latitud,
+          //             destionPosition.longitud
+          //           );
+
+          //           var bounds = new google.maps.LatLngBounds();
+          //           bounds.extend(start);
+          //           bounds.extend(end);
+          //           map.fitBounds(bounds);
+          //           var request = {
+          //             origin: start,
+          //             destination: end,
+          //             travelMode: google.maps.TravelMode.WALKING,
+          //           };
+          //           directionsService.route(
+          //             request,
+          //             function (response, status) {
+          //               if (status == google.maps.DirectionsStatus.OK) {
+          //                 directionsDisplay.setDirections(response);
+          //                 directionsDisplay.setMap(map);
+          //                 var directionsRenderer =
+          //                   new google.maps.DirectionsRenderer({
+          //                     suppressWarnings: true,
+          //                     panel: document.getElementById("instrucciones"),
+          //                   });
+
+          //                 directionsService.route(
+          //                   request,
+          //                   function (response, status) {
+          //                     if (status == google.maps.DirectionsStatus.OK) {
+          //                       //directionsRenderer.setDirections(response);
+          //                       var steps = response.routes[0].legs[0].steps;
+          //                       for (var i = 0; i < steps.length; i++) {
+          //                         var step = steps[i];
+          //                         var nombreNodo = step.nombre_nodo;
+          //                         if (nombreNodo) {
+          //                           step.instructions =
+          //                             step.instructions.replace(
+          //                               /{}/g,
+          //                               nombreNodoOrigen
+          //                             );
+          //                           step.instructions =
+          //                             step.instructions.replace(
+          //                               /{}/g,
+          //                               nombreNodoDestino
+          //                             );
+          //                         }
+          //                       }
+          //                       document.getElementById(
+          //                         "instrucciones"
+          //                       ).style.display = "block";
+
+          //                       directionsRenderer.setDirections(response);
+          //                     }
+          //                   }
+          //                 );
+          //               } else {
+          //                 alert(
+          //                   "Directions Request from " +
+          //                     start.toUrlValue(6) +
+          //                     " to " +
+          //                     end.toUrlValue(6) +
+          //                     " failed: " +
+          //                     status
+          //                 );
+          //               }
+          //             }
+          //           );
+          //         })
+          //         .catch((error) => {
+          //           console.error("Error al calcular el camino:", error);
+          //         });
+          //     }
+          //   }
+          //   initialize();
+          //   //google.maps.event.addDomListener(window, "load", initialize);
+          // }
+          // function loadGoogleMapsScript() {
+          //   var script = document.createElement("script");
+          //   script.src =
+          //     "https://maps.googleapis.com/maps/api/js?sensor=false&key=AIzaSyAdukNsKwEAhIbP0izS09hX6QVFmJbVpKU&callback=mapLocation";
+          //   document.body.appendChild(script);
+          // }
+          // loadGoogleMapsScript();
+        </script>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#nodos").DataTable({
+          pageLength: 5,
+          lengthMenu: [
+            [5, 10, 20, -1],
+            [5, 10, 20, "Todos"],
+          ],
+          dom: '<"top"f>rt<"bottom"lp><"clear">',
+          columnDefs: [{ targets: [0, 1], orderable: false }],
+          language: {
+            lengthMenu: "",
+            zeroRecords: "Ningún bloque encontrado",
+            info: "",
+            infoEmpty: "Ningún usuario encontrado",
+            infoFiltered: "(filtrados desde _MAX_ registros totales)",
+            search: "Buscar:",
+            loadingRecords: "Cargando...",
+            paginate: {
+              first: "Primero",
+              last: "Último",
+              next: "Siguiente",
+              previous: "Anterior",
+            },
+          },
+        });
+      });
+    </script>
+    <script>
+      function cerrarSesion() {
+        Swal.fire({
+          title: "¿Estás seguro de que deseas cerrar sesión?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Sí, cerrar sesión",
+          cancelButtonText: "Cancelar",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/";
+          }
+        });
+      }
+      function changeColor() {
+        // Cambiar el color del texto cuando el mouse está encima del enlace
+        const linkElement = document.querySelector("a");
+        linkElement.style.color = "red";
+      }
+    </script>
+  </body>
+</html>

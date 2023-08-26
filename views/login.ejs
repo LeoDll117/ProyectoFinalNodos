@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inicio Sesión</title>
+    <link rel="stylesheet" type="text/css" href="/Styles/styleslogin.css">
+  </head>
+  <body>
+    <section>
+      <div class="form-box">
+        <div class="form-value">
+          <form action="/login" method="POST" id="loginForm">                        
+            <h1>INICIO SESIÓN</h1>
+            <img src="/Styles/logo.png" alt="Imagen on fondo transparente" />
+
+            <div class="inputbox">
+              <ion-icon name="mail-outline"></ion-icon>
+              <input type="email" name="email" placeholder="Correo Electronico" required />
+              
+            </div>
+            <div class="inputbox">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+              <input type="password" name="password" placeholder="Contraseña" required />
+              
+            </div>
+            <div class="container">
+              <button type="submit" class = "button"><strong>Iniciar Sesión</strong></button>
+              <button id = "buttonregistrarse" class = "button"><strong>Registrarse</strong></button>
+              <br></br>
+            </div>  
+            <div class = "contenedor">
+              <a href="/forgot-password" class="btn btn-outline-primary mt-4 olvidaste-contrasena">Olvidaste tu contraseña?</a>
+            </div>
+            <div id="msg">
+              <% if (error) { %>
+                <strong><p><%= error %></p></strong>
+              <% } else if (success) { %>
+                <strong><p><%= success %></p></strong>
+              <% } %>
+            </div>
+            <script>
+              const botonRegistro = document.getElementById("buttonregistrarse");
+              // Agregar un evento click al botón
+              botonRegistro.addEventListener("click", function () {
+                // Redireccionar a la página deseada /Registro
+                window.location.href = "/Registro";
+              });
+            </script>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </section>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+    <script>
+      const loginForm = document.getElementById("loginForm");
+    
+      // Agrega un evento "submit" al formulario
+      loginForm.addEventListener("submit", function(event) {
+        // Borra los valores de los campos después de enviar el formulario
+        document.getElementById("email").value = "";
+        document.getElementById("password").value = "";
+      });
+    </script>
+  </body>
+</html>

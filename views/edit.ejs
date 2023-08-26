@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADMINISTRADOR</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link rel="stylesheet" type="text/css" href="/Styles/stylesnodo.css" />
+  </head>
+
+  <body>
+    <section>
+      <div class="card-header">
+        <span
+          class="texto"
+          style="
+            font-size: 2em;
+            color: black;
+            display: block;
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+          "
+          >Editar Bloque</span
+        >
+      </div>
+      <% if (user){%>
+      <div class="container mt-4">
+        <img
+          src="/Styles/destino.png"
+          alt="Descripción de la imagen"
+          class="resizable-image"
+          style="max-width: 25%; display: block; margin: 0 auto"
+        />
+        <div class="card-body">
+          <form
+            action="/update"
+            method="POST"
+            id="editForm"
+            style="font-family: inherit"
+          >
+            <div class="form-box">
+              <div class="form-value" style="margin-top: 20px">
+                <input id="id" name="id" value="<%= user.id_nodo %>" hidden />
+                <div
+                  class="row justify-content-center"
+                  style="margin-left: 1px"
+                >
+                  <div class="mb-3" style="margin-left: 7px">
+                    <div class="form-floating mb-1">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="nombre"
+                        name="nombre"
+                        value="<%= user.nombre_nodo %>"
+                        tabindex="1"
+                        style="width: 427px"
+                        required
+                      />
+                      <label for="floatingInput">Nombre del bloque:</label>
+                    </div>
+                  </div>
+                  <div class="mb-3" style="margin-left: 7px">
+                    <div class="form-floating mb-1">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="descripcion"
+                        name="descripcion"
+                        value="<%= user.descripcion %>"
+                        tabindex="1"
+                        style="width: 427px"
+                        required
+                      />
+                      <label for="floatingInput">Descripción:</label>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="row justify-content-center"
+                  style="margin-left: 1px"
+                >
+                  <div class="mb-3" style="margin-left: 7px">
+                    <div class="form-floating mb-1">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="latitud"
+                        name="latitud"
+                        value="<%= user.latitud %>"
+                        tabindex="1"
+                        style="width: 427px"
+                        required
+                      />
+                      <label for="floatingInput">Latitud:</label>
+                    </div>
+                  </div>
+                  <div class="mb-3" style="margin-left: 7px">
+                    <div class="form-floating mb-1">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="longitud"
+                        name="longitud"
+                        value="<%= user.longitud %>"
+                        tabindex="1"
+                        style="width: 427px"
+                        required
+                      />
+                      <label for="floatingInput">Longitud:</label>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="row justify-content-center"
+                  style="margin-left: 1px"
+                >
+                  <div class="mb-3" style="margin-left: 7px">
+                    <div
+                      id="mensaje-exito"
+                      style="display: none; width: 427px"
+                      class="alert alert-success"
+                    >
+                      <i class="fas fa-check-circle"></i> Bloque actualizado
+                      exitosamente.
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-primary custom-button"
+                  tabindex="5"
+                  style="background-color: #210f7a; margin-left: 100px"
+                >
+                  GUARDAR
+                </button>
+                <a
+                  href="javascript:void(0);"
+                  onclick="cerrarModal()"
+                  class="btn btn-secondary custom-button"
+                  style="background-color: rgb(200, 32, 32); margin-left: 50px"
+                  >CANCELAR</a
+                >
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <%} %>
+    </section>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      document
+        .getElementById("editForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const latitud = document.getElementById("latitud").value;
+          const longitud = document.getElementById("longitud").value;
+
+          if (!isValidLatitud(latitud) || !isValidLongitud(longitud)) {
+            alert(
+              "Latitud o longitud no válida. Por favor, ingrese valores válidos."
+            );
+          } else {
+            document.getElementById("editForm").submit();
+          }
+        });
+
+      function isValidLatitud(latitud) {
+        return (
+          !isNaN(latitud) &&
+          parseFloat(latitud) >= -90 &&
+          parseFloat(latitud) <= 90
+        );
+      }
+
+      function isValidLongitud(longitud) {
+        return (
+          !isNaN(longitud) &&
+          parseFloat(longitud) >= -180 &&
+          parseFloat(longitud) <= 180
+        );
+      }
+    </script>
+    <script>
+      document
+        .getElementById("editForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const mensajeExito = document.getElementById("mensaje-exito");
+          mensajeExito.style.display = "block";
+          setTimeout(function () {
+            mensajeExito.style.display = "none";
+          }, 1000);
+        });
+    </script>
+  </body>
+</html>
